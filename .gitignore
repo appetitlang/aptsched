@@ -1,0 +1,8 @@
+# Config file that may be used locally for testing
+aptsched.json
+
+# Log file generated when testing things locally
+aptsched.log
+
+# Any binaries produced as part of local builds
+aptsched
