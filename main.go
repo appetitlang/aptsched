@@ -169,10 +169,22 @@ func main() {
 	nostdout_flag := flag.Bool(
 		"nostdout",
 		false,
-		"Disable logging to standard out.",
+		"Disable logging to standard out",
+	)
+
+	// Version info
+	version_flag := flag.Bool(
+		"version",
+		false,
+		"Get version information",
 	)
 	// Parse the flags
 	flag.Parse()
+
+	if *version_flag {
+		fmt.Println("Appetit Scheduler (aptsched) v" + VERSION_STRING)
+		os.Exit(0)
+	}
 
 	// Create a WaitGroup. Thanks to https://stackoverflow.com/a/18207832
 	var wg sync.WaitGroup
