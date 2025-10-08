@@ -15,6 +15,8 @@ import (
 var VERSION int = 1
 var VERSION_STRING string = strconv.Itoa(VERSION)
 
+var BuildDate string = "-development"
+
 // The struct that holds the JSON values
 type Tasks struct {
 	Name	string	`json:"name"`
@@ -152,8 +154,10 @@ func Runner(
 			interpreter,
 			path,
 		)
-		// Write the line or throw an error if the writing doesn't work
-		if _, write_error := logger.WriteString(log_line); write_error != nil {
+		// Write the line to the log file
+		_, write_error := logger.WriteString(log_line)
+		// Throw an error if the writing doesn't work
+		if write_error != nil {
 			fmt.Println("\t\033[31m!! Error writing the logfile\033[0m")
 		}
 		/* Close the log. This can't be deferred above because this is an
@@ -181,6 +185,7 @@ func main() {
 	// Parse the flags
 	flag.Parse()
 
+	// If the version flag is present, print out the version and exit
 	if *version_flag {
 		fmt.Println("Appetit Scheduler (aptsched) v" + VERSION_STRING)
 		os.Exit(0)
@@ -208,9 +213,18 @@ func main() {
 		)
 	}
 
-	// If the nostdout flag isn't passed, log out to stdout.
+	// If the nostdout flag isn't passed, log out intro info to stdout.
 	if !*nostdout_flag {
-		fmt.Println("\033[32m:: Appetit Scheduler ::\033[0m")
+		// Start by printing the 
+		fmt.Printf(
+			"\033[32m:: Appetit Scheduler version %s::\033[0m\n",
+			VERSION_STRING,
+		)
+		fmt.Printf("Build Date: %s\n", BuildDate)
+		/* For each task, print out the info to help users see what tasks are
+			scheduled. This is a chance to catch any errors that aren't
+			technical.
+		*/
 		for _, detail := range tasks {
 			fmt.Println("\033[35m" + detail.Name + "\033[0m")
 			fmt.Println("\t\033[33mInterpreter: \033[0m" + detail.Interpreter)
@@ -218,6 +232,7 @@ func main() {
 			fmt.Println("\t\033[33mTime: \033[0m" + detail.Time)
 		}
 
+		// Print out the log header and the start time for logging
 		fmt.Println("\n\033[32m:: Log ::\033[0m")
 		fmt.Println(
 			"Start Time: " + time.Now().Format("02/01/2006 15:04:05"),
