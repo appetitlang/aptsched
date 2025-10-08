@@ -188,6 +188,7 @@ func main() {
 	// If the version flag is present, print out the version and exit
 	if *version_flag {
 		fmt.Println("Appetit Scheduler (aptsched) v" + VERSION_STRING)
+		fmt.Printf("Build Date: %s\n", BuildDate)
 		os.Exit(0)
 	}
 
@@ -220,7 +221,6 @@ func main() {
 			"\033[32m:: Appetit Scheduler version %s::\033[0m\n",
 			VERSION_STRING,
 		)
-		fmt.Printf("Build Date: %s\n", BuildDate)
 		/* For each task, print out the info to help users see what tasks are
 			scheduled. This is a chance to catch any errors that aren't
 			technical.

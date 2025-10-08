@@ -6,3 +6,6 @@ aptsched.log
 
 # Any binaries produced as part of local builds
 aptsched
+
+# Any binaries that may be built as part of testing
+dist/

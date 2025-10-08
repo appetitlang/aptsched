@@ -13,6 +13,10 @@ The following will get you up and going:
 
 Simply run the binary to start the scheduler. Note though that this will fail if you don't set up the scheduler itself.
 
+#### Make Files
+A conventional `Makefile` is available that lets you build platform specific builds or running `make` will build all binaries for all platforms in `dist/`.
+
+A `Make.ps1` file sits in for Windows users who may not have `make` installed.
 
 ### Setting up Aptsched
 The scheduler pulls in information from a file called `aptsched.json` that sits in the same spot as the `aptsched` binary. This file is an array of JSON objects that each have four key-value pairs:
