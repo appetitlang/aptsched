@@ -19,56 +19,62 @@ var BuildDate string = "-development"
 
 // The struct that holds the JSON values
 type Tasks struct {
-	Name	string	`json:"name"`
-	Interpreter	string	`json:"interpreter"`
-	Path	string	`json:"path"`
-	Time	string	`json:"time"`
+	Name        string `json:"name"`
+	Interpreter string `json:"interpreter"`
+	Path        string `json:"path"`
+	Time        string `json:"time"`
 }
 
-/* This function parses the time key to work out how often a task should be
-	run. This splits the time into its two components: the count and the time
-	character (ie. the s, m, or h). This then converts the count to the seconds
-	equivalent.
-
+/*
+This function parses the time key to work out how often a task should be
+run. This splits the time into its two components: the count and the
+time character (ie. the s, m, or h). This then converts the count to
+the seconds equivalent.
 */
 func ParseTime(time string) (int, error) {
-	/* Get the last character to get the time scale (ie. seconds, minutes or
+	/*
+		Get the last character to get the time scale (ie. seconds, minutes or
 		hours). This should be one of s, m, or h as a result which is checked
 		below.
 	*/
 	time_scale := string(time[len(time)-1])
 	// Get everything up to and including the last character to get the time
-	time_length, time_length_error := strconv.Atoi(time[0:len(time)-1])
+	time_length, time_length_error := strconv.Atoi(time[0 : len(time)-1])
 	// Throw an error if the length is not a valid integer
 	if time_length_error != nil {
 		return 0, fmt.Errorf(
 			"the time provided is not a valid integer: %s", time,
 		)
 	}
-	/* Hold the "multiplier", the value used to convert the time scale provided
-		into seconds as seconds are the "base" time scale.
+	/*
+		Hold the "multiplier", the value used to convert the time scale
+		provided into seconds as seconds are the "base" time scale.
 	*/
 	var multiplier int
 
 	// Convert the time scale to seconds by setting the multiplier
 	switch time_scale {
-	/* If we're running hours, we need to convert the value to seconds by
+	/*
+		If we're running hours, we need to convert the value to seconds by
 		multiplying it by 60^2.
 	*/
 	case "h":
-		multiplier = 60*60
-	/* If we're running minutes, we need to convert the value to seconds by
+		multiplier = 60 * 60
+	/*
+		If we're running minutes, we need to convert the value to seconds by
 		multiplying it by 60.
 	*/
 	case "m":
 		multiplier = 60
-	/* If we're running second, we don't need to convert the value to seconds
+	/*
+		If we're running second, we don't need to convert the value to seconds
 		and so we don't need to multiply anything so we set the multiplier to
 		one.
 	*/
 	case "s":
 		multiplier = 1
-	/* If it's not oen of h, m, or s, we've hit an error so we throw one and
+	/*
+		If it's not oen of h, m, or s, we've hit an error so we throw one and
 		return one alongside a value of zero as a stand in for nothing.
 	*/
 	default:
@@ -76,24 +82,26 @@ func ParseTime(time string) (int, error) {
 			"the last character needs to be one of h, m, or s: %s", time,
 		)
 	}
-	/* Convert the time_length to the appropriate value in seconds by using the
-		recently set multiplier.
+	/*
+		Convert the time_length to the appropriate value in seconds by using
+		the recently set multiplier.
 	*/
 	time_length = time_length * multiplier
 	// Return the time length and nil as an error
 	return time_length, nil
 }
 
-/* This function is the actual runner of tasks that is called as a goroutine.
-	It takes in five parameters:
-	- timer: the length of time that is used as the timer for how often a task
-		is called.
-	- name: the name of the task which is used for logging.
-	- interprter: the path to the interpreter used to execute the Appetit
-		script.
-	- path: the path to the Appetit script.
-	- nostdoutlog: a boolean that sets out whether each execution of the script
-		should be logged out.
+/*
+This function is the actual runner of tasks that is called as a goroutine.
+It takes in five parameters:
+  - timer: the length of time that is used as the timer for how often a
+    task is called.
+  - name: the name of the task which is used for logging.
+  - interprter: the path to the interpreter used to execute the Appetit
+    script.
+  - path: the path to the Appetit script.
+  - nostdoutlog: a boolean that sets out whether each execution of the
+    script should be logged out.
 */
 func Runner(
 	timer int,
@@ -101,8 +109,9 @@ func Runner(
 	interpreter string,
 	path string,
 	nostdoutlog bool) {
-	
-	/* Run an infinite loop on the premise that a SIGINT is the end of the
+
+	/*
+		Run an infinite loop on the premise that a SIGINT is the end of the
 		script.
 	*/
 	for {
@@ -122,7 +131,8 @@ func Runner(
 			)
 		}
 
-		/* Set the command to be executed by combining the interpreter and the
+		/*
+			Set the command to be executed by combining the interpreter and the
 			path to the script. We still need these seperate so that we can
 			send these as parameters to the exec.Command() function.
 		*/
@@ -160,7 +170,8 @@ func Runner(
 		if write_error != nil {
 			fmt.Println("\t\033[31m!! Error writing the logfile\033[0m")
 		}
-		/* Close the log. This can't be deferred above because this is an
+		/*
+			Close the log. This can't be deferred above because this is an
 			infinite loop.
 		*/
 		logger.Close()
@@ -200,7 +211,7 @@ func main() {
 	if schedule_error != nil {
 		fmt.Println(schedule_error.Error())
 	}
-	
+
 	// Hold our tasks
 	var tasks []Tasks
 
@@ -210,18 +221,19 @@ func main() {
 	if parse_error != nil {
 		fmt.Println(
 			"Error parsing the task file. Check to make sure that it " +
-			"follows the proper format.",
+				"follows the proper format.",
 		)
 	}
 
 	// If the nostdout flag isn't passed, log out intro info to stdout.
 	if !*nostdout_flag {
-		// Start by printing the 
+		// Start by printing the
 		fmt.Printf(
 			"\033[32m:: Appetit Scheduler version %s::\033[0m\n",
 			VERSION_STRING,
 		)
-		/* For each task, print out the info to help users see what tasks are
+		/*
+			For each task, print out the info to help users see what tasks are
 			scheduled. This is a chance to catch any errors that aren't
 			technical.
 		*/
@@ -251,7 +263,7 @@ func main() {
 		time_value, time_error := ParseTime(task.Time)
 		// If there was an error, report it
 		if time_error != nil {
-			fmt.Println(time_error.Error())	
+			fmt.Println(time_error.Error())
 		}
 		// Set off the runner as a goroutine
 		go Runner(time_value, name, interpreter, path, *nostdout_flag)
